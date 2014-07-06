@@ -181,7 +181,7 @@ function is_undefined_or_unset
 	return 1
 }
 
-# Function to test if a value is a positive integer
+# Function to test if a value is a valid positive integer
 #
 #	@in_param	$1 - The value to test
 #
@@ -189,11 +189,35 @@ function is_positive_integer
 {
 	(( $# < 1 )) && return 1
 	
-	case "$1" in
-	    ''|*[!0-9]*) return 1 ;;
-	esac
+	[[ $1 =~ ^([1-9][0-9]*|0)$ ]] && return 0
 	
-	return 0
+	return 1
+}
+
+# Function to test if a value is a valid negative integer
+#
+#	@in_param	$1 - The value to test
+#
+function is_negative_integer
+{
+	(( $# < 1 )) && return 1
+	
+	[[ $1 =~ ^(-[1-9][0-9]*|0)$ ]] && return 0
+	
+	return 1
+}
+
+# Function to test if a value is a valid (positive or negative) integer
+#
+#	@in_param	$1 - The value to test
+#
+function is_integer
+{
+	(( $# < 1 )) && return 1
+	[[ $1 =~ ^(-?[1-9][0-9]*|0)$ ]] && return 0
+
+	
+	return 1
 }
 
 ###################################################################################################
