@@ -16,6 +16,13 @@ unset SOME_NONEXISTANT_VAR
 SOME_EMPTY_VAR=""
 SOME_SET_VAR="hello!"
 
+POSITIVE_INTEGER="1234567890"
+NEGATIVE_INTEGER="-1234567890"
+INVALID_INTEGER="123a"
+POSITIVE_FLOAT="12345.6789"
+NEGATIVE_FLOAT="-12345.6789"
+INVALID_FLOAT="123.a"
+
 test_run_echo_return "is_defined   SOME_NONEXISTANT_VAR"
 test_run_echo_return "is_defined   SOME_EMPTY_VAR"
 test_run_echo_return "is_defined   SOME_SET_VAR"
@@ -32,4 +39,8 @@ test_run_echo_return "is_undefined_or_unset SOME_NONEXISTANT_VAR"
 test_run_echo_return "is_undefined_or_unset SOME_EMPTY_VAR"
 test_run_echo_return "is_undefined_or_unset SOME_SET_VAR"
 
-
+test_run_echo_return "is_positive_integer"
+test_run_echo_return "is_positive_integer ${POSITIVE_INTEGER}"
+test_run_echo_return "is_positive_integer ${NEGATIVE_INTEGER}"
+test_run_echo_return "is_positive_integer ${INVALID_INTEGER}"
+test_run_echo_return "is_positive_integer ${POSITIVE_FLOAT}"

@@ -181,6 +181,21 @@ function is_undefined_or_unset
 	return 1
 }
 
+# Function to test if a value is a positive integer
+#
+#	@in_param	$1 - The value to test
+#
+function is_positive_integer
+{
+	(( $# < 1 )) && return 1
+	
+	case "$1" in
+	    ''|*[!0-9]*) return 1 ;;
+	esac
+	
+	return 0
+}
+
 ###################################################################################################
 #                                                                                                 #
 #                                       Array Manipulation                                        #
