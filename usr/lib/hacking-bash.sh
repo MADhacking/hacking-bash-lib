@@ -36,8 +36,8 @@ function debug_echo
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
 	
 	v=$(printf "%-${DEBUG_INDENT}s" " ")
-	is_defined_and_set DEBUG && echo "debug:${v}${@}" >&2
-	is_defined_and_set LOGGING && logger -p local1.warn "debug:${v}${@}"
+	is_defined_and_set DEBUG && echo "debug:${v}${*}" >&2
+	is_defined_and_set LOGGING && logger -p local1.warn "debug:${v}${*}"
 }
 
 # Function to display an array if in debug mode.
@@ -57,14 +57,14 @@ function debug_echo_array
 		local AS AX IX FIRST MSG
 	
 		AS="echo $""{!${1}[*]}"
-		AX=$(eval ${AS})
+		AX=$(eval "${AS}")
 		
 		MSG="$1={"
 		
 		FIRST=""
 		for IX in ${AX}; do
 			AS="echo $""{${1}[${IX}]}"
-			AX=$(eval ${AS})
+			AX=$(eval "${AS}")
 	
 			[[ -n "${FIRST}" ]] && MSG+=", " || FIRST="no"
 	
@@ -82,17 +82,17 @@ function debug_function_enter
 {
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
 	
-	debug_echo "function ${@}"
+	debug_echo "function ${*}"
 	debug_echo "{"
-	DEBUG_INDENT=$(( $DEBUG_INDENT + 4 ))
+	DEBUG_INDENT=$(( DEBUG_INDENT + 4 ))
 }
 
 function debug_function_return
 {
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
 
-	(( $DEBUG_INDENT >= 4 )) && DEBUG_INDENT=$(( $DEBUG_INDENT - 4 ))
-	debug_echo "} ${@}"
+	(( DEBUG_INDENT >= 4 )) && DEBUG_INDENT=$(( DEBUG_INDENT - 4 ))
+debug_echo "} ${*}"
 }
 
 ###################################################################################################
@@ -234,11 +234,11 @@ function is_integer
 #
 function get_next_array_index
 {
-	is_defined_and_set DEBUG_get_next_array_index && debug_function_enter "get_next_array_index" ${@}
+	is_defined_and_set DEBUG_get_next_array_index && debug_function_enter "get_next_array_index" "${@}"
 	
 	# Make a query to obtain the indexes and evaluate it.
 	AS="echo $""{!${1}[*]}"
-	AX=$(eval ${AS})
+	AX=$(eval "${AS}")
 	
 	is_defined_and_set DEBUG_get_next_array_index && debug_echo "array access string: ${AS}" 
 	is_defined_and_set DEBUG_get_next_array_index && debug_echo "array indices: ${AX}"
@@ -256,7 +256,7 @@ function get_next_array_index
 		# Loop through the indexes...
 		for IX in ${AX}; do
 			# If this index has a greater value than $2 then we've found it...
-			if (( ${IX} > ${2} )); then
+			if (( IX > ${2} )); then
 				# Echo the index and return.
 				is_defined_and_set DEBUG_get_next_array_index && debug_echo "found next index: ${IX}"
 				echo "${IX}"
