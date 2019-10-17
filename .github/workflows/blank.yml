@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@master
     - uses: hacking-actions/bats-kcov@master
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
