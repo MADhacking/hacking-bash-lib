@@ -1,9 +1,9 @@
-name: Coverage
+name: Test Coverage
 
 on: [push]
 
 jobs:
-  build:
+  coverage:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
