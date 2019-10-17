@@ -1,7 +1,8 @@
 hacking-bash-lib
 ================
 
-![](https://github.com/MADhacking/hacking-bash-lib/workflows/Unit%20Tests/badge.svg) ![codecov](https://codecov.io/gh/MADhacking/hacking-bash-lib/branch/master/graph/badge.svg)
+![shellcheck](https://github.com/MADhacking/hacking-bash-lib/workflows/Shellcheck/badge.svg) ![tests](https://github.com/MADhacking/hacking-bash-lib/workflows/Unit%20Tests/badge.svg) [![coverage](https://codecov.io/gh/MADhacking/hacking-bash-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/MADhacking/hacking-bash-lib)
+
 
 The GNU Project's Bourne Again Shell (BASH) is the standard shell supplied with the vast majority of Linux systems, the default shell provided with Mac OS X and Darwin and is even available for Microsoft Windows. Whilst the Bash shell offers an extremely portable and feature rich environment for rapidly developing basic applications and utilities its syntax is often hard to parse visually and some features are buried beneath a mountain of complexity.
 
@@ -9,4 +10,4 @@ The Hacking Networked Solutions library for Bash provides a range of functions d
 
 More information may be found at:
 
-http://www.mad-hacking.net/software/linux/agnostic/hacking-bash-lib/index.xml
+[http://www.mad-hacking.net/software/linux/agnostic/hacking-bash-lib/index.xml](http://www.mad-hacking.net/software/linux/agnostic/hacking-bash-lib/index.xml)
