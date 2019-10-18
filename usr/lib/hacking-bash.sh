@@ -18,7 +18,7 @@
 function die
 {
 	error_echo "${1}"
-	exit
+	exit 1
 }
 
 # Function to send an error message (prefixed with ERROR:) to stderr
@@ -27,8 +27,8 @@ function die
 #
 function error_echo
 {
-	logger -p local1.error "ERROR: ${1}"
-	echo "ERROR: ${1}" >&2
+    echo "ERROR: ${1}" >&2
+	which logger &>/dev/null && logger -p local1.error "ERROR: ${1}"
 }
 
 function debug_echo
