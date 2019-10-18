@@ -9,9 +9,11 @@ DEBUG=true
 
 # debug_echo_array
 
-@test "debug_echo_array empty" {
+@test "debug_echo_array no params" {
 	run debug_echo_array
-	assert_output "debug: debug_echo_array() called with no parameters"
+	
+	assert_failure
+	assert_output "ERROR: debug_echo_array() called with no parameters"
 }
 
 @test "debug_echo_array undefined" {

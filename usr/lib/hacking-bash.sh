@@ -28,7 +28,8 @@ function die
 function error_echo
 {
     echo "ERROR: ${1}" >&2
-	which logger &>/dev/null && logger -p local1.error "ERROR: ${1}"
+	command -v logger && logger -p local1.error "ERROR: ${1}"
+	return 0
 }
 
 function debug_echo
@@ -36,8 +37,9 @@ function debug_echo
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
 	
 	v=$(printf "%-${DEBUG_INDENT}s" " ")
-	is_defined_and_set DEBUG && echo "debug:${v}${*}" >&2
+	is_defined_and_set DEBUG && echo "debug:${v}${*}" >> "${DEBUG_OUT}"
 	is_defined_and_set LOGGING && logger -p local1.warn "debug:${v}${*}"
+	return 0
 }
 
 # Function to display an array if in debug mode.
@@ -48,10 +50,7 @@ function debug_echo_array
 {
 	is_undefined DEBUG && is_undefined LOGGING && return
 	
-	if (( $# < 1 )); then
-		debug_echo "debug_echo_array() called with no parameters"
-		return 1
-	fi
+	(( $# < 1 )) && die "debug_echo_array() called with no parameters"
 
 	while (( $# > 0 )); do
 		local AS AX IX FIRST MSG
@@ -78,6 +77,15 @@ function debug_echo_array
 	done
 }
 
+function debug_function_calls
+{
+    is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
+    test -n "$(declare -f "$1")" || die "debug_function_calls() called with non-existent function name [$1]"
+    
+    rename_function "$1" "debug_function_calls_$1"
+    eval "function $1() { debug_function_enter \"$1\" \"\$@\"; debug_function_calls_$1 \"\$@\"; debug_function_return; }"
+}
+
 function debug_function_enter
 {
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
@@ -92,8 +100,57 @@ function debug_function_return
 	is_undefined_or_unset DEBUG && is_undefined_or_unset LOGGING && return
 
 	(( DEBUG_INDENT >= 4 )) && DEBUG_INDENT=$(( DEBUG_INDENT - 4 ))
-debug_echo "} ${*}"
+    debug_echo "} ${*}"
 }
+
+function is_function_defined
+{
+    test -n "$(declare -f "$1")"
+}
+
+# Function to copy a function
+#
+#   @in_param   $1 - The name of the function to copy
+#   @in_param   $2 - The name of the copy of the function
+#
+function copy_function 
+{
+    (( $# < 2 )) && die "copy_function() called with insufficient function names"
+    
+    test -n "$(declare -f "$2")" && die "copy_function() called with existent destination function name [$2]"
+    test -n "$(declare -f "$1")" || die "copy_function() called with non-existent source function name [$1]"
+
+    eval "${_/$1/$2}"
+}
+
+# Function to delete a function
+#
+#   @in_param   $1 - The name of the function to delete
+#
+function delete_function 
+{
+    (( $# < 1 )) && die "delete_function() called with no function name"
+
+    test -n "$(declare -f "$1")" || die "delete_function() called with non-existent source function name [$1]"
+    unset -f "$1"
+}
+
+# Function to rename a function
+#
+#   @in_param   $1 - The original name of the function
+#   @in_param   $2 - The new name of the function
+#
+function rename_function 
+{
+    (( $# < 2 )) && die "rename_function() called with insufficient function names"
+    
+    test -n "$(declare -f "$2")" && die "rename_function() called with existent destination function name [$2]"
+    test -n "$(declare -f "$1")" || die "rename_function() called with non-existent source function name [$1]"
+    
+    copy_function "$1" "$2"
+    delete_function "$1"
+}
+
 
 ###################################################################################################
 #                                                                                                 #
@@ -107,11 +164,8 @@ debug_echo "} ${*}"
 #
 function is_defined
 {
-	# If we were called with no parameters then quit and debug_echo a warning
-	if [[ -z "${1+x}" ]]; then
-		debug_echo "is_defined() called with no parameters"
-		return 1
-	fi
+	# If we were called with no parameters then quit with an error
+	[[ -z "${1+x}" ]] && die "is_defined() called with no variable name"
 	
 	# If the variable is undefined (and not just empty) then return false
 	[[ -z "${!1+x}" ]] && return 1
@@ -126,10 +180,7 @@ function is_defined
 function is_defined_and_set
 {
 	# If we were called with no parameters then quit and debug_echo a warning
-	if [[ -z "${1+x}" ]]; then
-		debug_echo "is_defined() called with no parameters"
-		return 1
-	fi
+	[[ -z "${1+x}" ]] && die "is_defined() called with no parameters"
 	
 	# If the variable is undefined (and not just empty) then return false.
 	[[ -z "${!1+x}" ]] && return 1
@@ -148,10 +199,7 @@ function is_defined_and_set
 function is_undefined
 {
 	# If we were called with no parameters then quit and debug_echo a warning
-	if [[ -z "${1+x}" ]]; then
-		debug_echo "is_undefined() called with no parameters"
-		return 0
-	fi
+	[[ -z "${1+x}" ]] && die "is_undefined() called with no parameters"
 	
 	# If the variable is undefined (and not just empty) then return true
 	[[ -z "${!1+x}" ]] && return 0
@@ -166,10 +214,7 @@ function is_undefined
 function is_undefined_or_unset
 {
 	# If we were called with no parameters then quit and debug_echo a warning
-	if [[ -z "${1+x}" ]]; then
-		debug_echo "is_undefined() called with no parameters"
-		return 0
-	fi
+	[[ -z "${1+x}" ]] && die "is_undefined() called with no parameters"
 	
 	# If the variable is undefined (and not just empty) then return true.
 	[[ -z "${!1+x}" ]] && return 0
@@ -229,11 +274,14 @@ function is_integer
 # Function to get the next index in an [indexed] array
 #
 #	@in_param	$1 - The name of the array variable
-#	@in_param	$2 - The current index
+#	@in_param	$2 - The current index (optional)
 #	@echo	   	   - The number of the next index or an empty string if none.
 #
 function get_next_array_index
 {
+    # If we were called with incorrect parameters then die
+    [[ -z "${1+x}" ]] && die "get_next_array_index() called with no array variable"
+
 	is_defined_and_set DEBUG_get_next_array_index && debug_function_enter "get_next_array_index" "${@}"
 	
 	# Make a query to obtain the indexes and evaluate it.
@@ -279,3 +327,5 @@ function get_next_array_index
 ###################################################################################################
 
 DEBUG_INDENT=0
+DEBUG_OUT="/dev/stderr"
+
