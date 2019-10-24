@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Ebuild Tests
 
 on: [push]
 
