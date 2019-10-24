@@ -21,6 +21,7 @@ SLOT="0"
 
 RESTRICT="!test? ( test )"
 
+RDEPEND="sys-apps/util-linux"
 DEPEND="test? ( dev-util/bats-assert )"
 
 src_test() {
