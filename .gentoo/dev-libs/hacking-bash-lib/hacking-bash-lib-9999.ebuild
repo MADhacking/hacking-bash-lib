@@ -9,8 +9,8 @@ LICENSE="LGPL-3"
 
 if [[ ${PV} = *9999* ]]; then
     inherit git-r3
-    EGIT_REPO_URI="https://github.com/MADhacking/hacking-bash-lib"
-    EGIT_BRANCH="master"
+    EGIT_REPO_URI="https://github.com/GITHUB_REPOSITORY"
+    EGIT_BRANCH="GITHUB_REF"
 else
     SRC_URI="https://github.com/MADhacking/hacking-bash-lib/archive/${P}.tar.bz2"
 fi
