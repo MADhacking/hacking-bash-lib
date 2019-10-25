@@ -28,7 +28,7 @@ function die
 function error_echo
 {
     echo "ERROR: ${1}" >&2
-	command -v logger && logger -p local1.error "ERROR: ${1}"
+	logger -p local1.error "ERROR: ${1}"
 	return 0
 }
 
