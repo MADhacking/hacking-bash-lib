@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-useradd -m -G users -s /bin/bash testrunner
-
-su --preserve-environment testrunner -c \
+su --preserve-environment portage -c \
     "kcov --bash-dont-parse-binary-dir \
      --include-path=. \
      /var/tmp/coverage \
