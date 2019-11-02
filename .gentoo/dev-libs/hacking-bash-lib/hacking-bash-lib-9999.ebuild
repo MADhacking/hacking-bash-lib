@@ -12,7 +12,7 @@ if [[ ${PV} = *9999* ]]; then
     EGIT_REPO_URI="https://github.com/GITHUB_REPOSITORY"
     EGIT_BRANCH="GITHUB_REF"
 else
-    SRC_URI="https://github.com/MADhacking/hacking-bash-lib/archive/${P}.tar.bz2"
+    SRC_URI="https://github.com/MADhacking/hacking-bash-lib/archive/${P}.tar.gz"
 fi
 
 KEYWORDS="amd64 x86"
