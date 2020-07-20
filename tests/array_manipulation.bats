@@ -71,7 +71,13 @@ DEBUG=true
     
     run debug_echo_array ASSOCIATIVE_ARRAY
     
-    assert_output 'debug: ASSOCIATIVE_ARRAY={[five]="5", [two]="2", [eight]="8", [one]="1", [zero]="0", [six]="6"}'
+    assert_output -p 'debug: ASSOCIATIVE_ARRAY={'
+    assert_output -p '[zero]="0"'
+    assert_output -p '[one]="1"'
+    assert_output -p '[two]="2"'
+    assert_output -p '[five]="5"'
+    assert_output -p '[six]="6"'
+    assert_output -p '[eight]="8"'
 }
 
 # get_next_array_index
